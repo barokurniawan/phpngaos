@@ -1,0 +1,5 @@
+/vendor/
+/src/Cache/*.php
+/storage/*.jpg
+/storage/*.jpeg
+/storage/*.png

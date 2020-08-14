@@ -1,0 +1,8 @@
+
+app_address = "http://localhost:8000"
+app_name = "NGAOS IMAGE"
+
+storage_location = "storage/"
+
+cache_path = "../src/Cache"
+view_path = "../src/Views"

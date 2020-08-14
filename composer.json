@@ -1,0 +1,21 @@
+{
+    "name": "phpngaos/phpngaos",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Kurniawan",
+            "email": "kurniawan9411n@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "phpngaos\\": "src/"
+        }
+    },
+    "require": {
+        "yosymfony/toml": "^1.0",
+        "thiagoalessio/tesseract_ocr": "^2.9",
+        "nikic/fast-route": "^1.3",
+        "jenssegers/blade": "^1.3"
+    }
+}
