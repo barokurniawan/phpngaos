@@ -4,3 +4,4 @@
 /storage/*.jpeg
 /storage/*.png
 *.toml
+*.cache

@@ -8,6 +8,7 @@ class Config
 {
     private static $instance;
     private $kv;
+    private $config_path = __DIR__ . '/../../app.toml';
 
     public static function getInstance()
     {
@@ -20,7 +21,7 @@ class Config
 
     public function __construct()
     {
-        $this->kv = Toml::ParseFile(__DIR__ . '/../../app.toml');
+        $this->kv = Toml::ParseFile($this->getConfigPath());
     }
 
     public function getValue(string $key)
@@ -35,5 +36,15 @@ class Config
     public static function get(string $key)
     {
         return self::getInstance()->getValue($key);
+    }
+
+    /**
+     * Get the value of config_path
+     *
+     * @return mixed
+     */
+    public function getConfigPath()
+    {
+        return $this->config_path;
     }
 }

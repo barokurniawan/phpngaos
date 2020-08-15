@@ -2,7 +2,6 @@
 
 namespace phpngaos\Controller;
 
-use Exception;
 use phpngaos\Bootstrap\Url;
 use phpngaos\Bootstrap\View;
 use phpngaos\Bootstrap\Config;
@@ -11,37 +10,51 @@ use thiagoalessio\TesseractOCR\TesseractOCR;
 
 class Welcome
 {
+    private $errorMessage;
+
     public function indexHandler()
     {
         return View::load("content");
     }
 
-    public function handleUpload()
+    public function UploadValidation(array $filesForm)
     {
         $path = __DIR__ . "/../../" . Config::get("storage_location");
         $allowedFile = ["jpg", "jpeg", "png"];
 
         if (!is_dir($path)) {
-            Session::set("error_message", "Storage location not found!");
-            return Url::Redirect("/");
+            $this->setErrorMessage("Storage location not found!");
+            return false;
         }
 
         if (!is_writeable($path)) {
-            Session::set("error_message", "Unable to write to storage location!");
-            return Url::Redirect("/");
+            $this->setErrorMessage("Unable to write to storage location!");
+            return false;
         }
 
-        if (empty($_FILES['file']['tmp_name'])) {
-            Session::set("error_message", "File is not uploaded!");
-            return Url::Redirect("/");
+        if (empty($filesForm['file']['tmp_name'])) {
+            $this->setErrorMessage("File is not uploaded!");
+            return false;
         }
 
-        $ext = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
+        $ext = strtolower(pathinfo($filesForm['file']['name'], PATHINFO_EXTENSION));
         if (!in_array($ext, $allowedFile)) {
-            Session::set("error_message", "File extension is not allowed!");
+            $this->setErrorMessage("File extension is not allowed!");
+            return false;
+        }
+
+        return true;
+    }
+
+    public function handleUpload()
+    {
+        if (!$this->UploadValidation($_FILES)) {
+            Session::set("error_message", $this->getErrorMessage());
             return Url::Redirect("/");
         }
 
+        $path = __DIR__ . "/../../" . Config::get("storage_location");
+        $ext = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
         $filename = uniqid() . "." . $ext;
         $newFile = $path . $filename;
         $upload = move_uploaded_file($_FILES['file']['tmp_name'], $newFile);
@@ -53,5 +66,29 @@ class Welcome
         Session::set("reader_result", (new TesseractOCR($newFile))->run());
         unlink($newFile);
         return Url::Redirect("/");
+    }
+
+    /**
+     * Get the value of errorMessage
+     *
+     * @return mixed
+     */
+    public function getErrorMessage()
+    {
+        return $this->errorMessage;
+    }
+
+    /**
+     * Set the value of errorMessage
+     *
+     * @param   mixed  $errorMessage  
+     *
+     * @return  self
+     */
+    public function setErrorMessage($errorMessage)
+    {
+        $this->errorMessage = $errorMessage;
+
+        return $this;
     }
 }
